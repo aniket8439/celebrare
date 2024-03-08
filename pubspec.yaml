@@ -38,6 +38,7 @@ dependencies:
   file_picker: ^5.2.4
   image: ^3.0.1
   image_cropper: ^5.0.1
+  path_provider: ^2.0.2
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +66,12 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/user_image_frame_1.png
+    - assets/user_image_frame_2.png
+    - assets/user_image_frame_3.png
+    - assets/user_image_frame_4.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
