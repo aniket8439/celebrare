@@ -1,14 +1,16 @@
+import 'package:flutter/material.dart';
+
+import 'package:image/image.dart' as img;
+import 'dart:typed_data';
 import 'dart:math';
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
+
 
 enum Shape {
   square,
   rectangle,
   circle,
+  heart,
   original,
 }
 
@@ -34,7 +36,37 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
   @override
   void initState() {
     super.initState();
-    _currentImage = img.copyResize(widget.modifiedImage, width: 200, height: 200);
+    _currentImage = img.copyResize(widget.modifiedImage, width: 300, height: 300);
+  }
+
+  void _applyShape(Shape shape) {
+    img.Image image = img.copyResize(widget.modifiedImage, width: 300, height: 300);
+
+    switch (shape) {
+      case Shape.square:
+        _applySquareShape(image);
+        break;
+      case Shape.rectangle:
+        _applyRectangleShape(image);
+        break;
+      case Shape.circle:
+        _applyCircleShape(image);
+        break;
+      case Shape.heart:
+        _applyHeartShape(image);
+        break;
+      case Shape.original:
+        break;
+    }
+
+    setState(() {
+      _currentImage = image;
+    });
+  }
+
+  void _useThisImage() {
+    widget.onUseThisImage();
+    Navigator.pop(context, _currentImage);
   }
 
   @override
@@ -50,7 +82,7 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
                 color: Colors.black,
                 icon: const Icon(Icons.close),
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -83,7 +115,7 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
                 ),
               ),
               GestureDetector(
-                onTap: () => _applyShape(Shape.square),
+                onTap: () => _applyShape(Shape.heart),
                 child: Card(
                   child: Padding(
                     padding: EdgeInsets.all(4),
@@ -96,7 +128,7 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
                 ),
               ),
               GestureDetector(
-                onTap: () => _applyShape(Shape.circle),
+                onTap: () => _applyShape(Shape.square),
                 child: Card(
                   child: Padding(
                     padding: EdgeInsets.all(4),
@@ -109,7 +141,7 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
                 ),
               ),
               GestureDetector(
-                onTap: () => _applyShape(Shape.rectangle),
+                onTap: () => _applyShape(Shape.circle),
                 child: Card(
                   child: Padding(
                     padding: EdgeInsets.all(4),
@@ -122,7 +154,7 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
                 ),
               ),
               GestureDetector(
-                onTap: () => _applyShape(Shape.square),
+                onTap: () => _applyShape(Shape.rectangle),
                 child: Card(
                   child: Padding(
                     padding: EdgeInsets.all(4),
@@ -153,33 +185,6 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
     );
   }
 
-  void _applyShape(Shape shape) {
-    img.Image image = img.copyResize(widget.modifiedImage, width: 200, height: 200);
-
-    switch (shape) {
-      case Shape.square:
-        _applySquareShape(image);
-        break;
-      case Shape.rectangle:
-        _applyRectangleShape(image);
-        break;
-      case Shape.circle:
-        _applyCircleShape(image);
-        break;
-      case Shape.original:
-      // Do nothing for the original shape
-        break;
-    }
-
-    setState(() {
-      _currentImage = image;
-    });
-  }
-
-  void _useThisImage() {
-    widget.onUseThisImage(); // Callback to close the dialog
-  }
-
   void _applySquareShape(img.Image image) {
     int size = image.width < image.height ? image.width : image.height;
     int center = size ~/ 2;
@@ -189,12 +194,53 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
       for (int x = 0; x < size; x++) {
         double distance = _calculateDistance(x, y, center, center);
 
-        if (distance > radius) {
-          image.setPixel(x, y, image.getPixel(center, center));
+        if (distance > radius && x > center - radius && x < center + radius && y > center - radius && y < center + radius) {
+          // image.setPixel(x, y, img.getColor(255, 255, 255));
         }
       }
     }
   }
+
+  void _applyHeartShape(img.Image image) {
+    int width = image.width;
+    int height = image.height;
+
+    int hWidth = width ~/ 2;
+    int hHeight = height ~/ 2;
+    int hBase = width ~/ 4;
+    int hTop = height ~/ 5;
+
+    Path heartPath = Path()
+      ..moveTo(hWidth.toDouble(), hHeight.toDouble() - hTop.toDouble())
+      ..cubicTo(
+        hWidth.toDouble() + hBase.toDouble(),
+        hHeight.toDouble() - 2 * hTop.toDouble(),
+        hWidth.toDouble() + 2 * hBase.toDouble(),
+        hHeight.toDouble(),
+        hWidth.toDouble(),
+        hHeight.toDouble() + 2 * hTop.toDouble(),
+      )
+      ..cubicTo(
+        hWidth.toDouble() - 2 * hBase.toDouble(),
+        hHeight.toDouble(),
+        hWidth.toDouble() - hBase.toDouble(),
+        hHeight.toDouble() - 2 * hTop.toDouble(),
+        hWidth.toDouble(),
+        hHeight.toDouble() - hTop.toDouble(),
+      );
+
+
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        if (heartPath.contains(Offset(x.toDouble(), y.toDouble()))) {
+          image.setPixel(x, y, _currentImage!.getPixel(x, y));
+        } else {
+          image.setPixel(x, y, img.getColor(255, 255, 255));
+        }
+      }
+    }
+  }
+
 
   void _applyRectangleShape(img.Image image) {
     int width = image.width;
@@ -202,8 +248,8 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        if (y > height ~/ 3) {
-          image.setPixel(x, y, image.getPixel(x, y));
+        if (y > height ~/ 2) {
+          image.setPixel(x, y, img.getColor(255, 255, 255));
         }
       }
     }
@@ -219,8 +265,8 @@ class _ShapeSelectionDialogState extends State<ShapeSelectionDialog> {
       for (int x = 0; x < width; x++) {
         double distance = _calculateDistance(x, y, center, center);
 
-        if (distance <= radius) {
-          image.setPixel(x, y, image.getPixel(x, y));
+        if (distance >= radius) {
+          image.setPixel(x, y, img.getColor(255, 255, 255));
         }
       }
     }

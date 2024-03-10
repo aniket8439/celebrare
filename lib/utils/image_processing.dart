@@ -21,7 +21,6 @@ void applyShape(Shape shape, img.Image image) {
       _applyCircleShape(image);
       break;
     case Shape.original:
-    // Do nothing for the original shape
       break;
   }
 }

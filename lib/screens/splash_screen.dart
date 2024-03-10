@@ -37,6 +37,21 @@ class _MyHomePageState extends State<MyHomePage> {
               fontWeight: FontWeight.w900,
               decoration: TextDecoration.none,
             ),
+          ),
+          Row(
+            children: [
+              SizedBox(width: 200,),
+              Text(
+
+                "Digital Invitation",
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w200,
+                  decoration: TextDecoration.none,
+                ),
+              )
+            ],
           )
         ],
       ),

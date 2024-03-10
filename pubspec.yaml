@@ -39,6 +39,7 @@ dependencies:
   image: ^3.0.1
   image_cropper: ^5.0.1
   path_provider: ^2.0.2
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/user_image_frame_2.png
     - assets/user_image_frame_3.png
     - assets/user_image_frame_4.png
+    - assets/heart.jpeg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

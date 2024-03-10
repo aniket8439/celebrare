@@ -42,29 +42,6 @@ class _SecondScreenState extends State<SecondScreen> {
           File croppedFile = File(croppedResult.path);
           img.Image? image = img.decodeImage(croppedFile.readAsBytesSync());
 
-          if (image != null) {
-            setState(() {
-              _originalFile = originalFile;
-              _modifiedImage = image;
-            });
-
-            // Show the alert box with shape selection activity
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => ShapeSelectionDialog(
-                originalFile: _originalFile!,
-                modifiedImage: _modifiedImage!,
-                onUseThisImage: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-              ),
-            );
-          } else {
-            print("Error decoding the image.");
-          }
-        } else if (croppedResult is File) {
-          File croppedFile = croppedResult;
-          img.Image? image = img.decodeImage(croppedFile.readAsBytesSync());
 
           if (image != null) {
             setState(() {
@@ -79,10 +56,14 @@ class _SecondScreenState extends State<SecondScreen> {
                 originalFile: _originalFile!,
                 modifiedImage: _modifiedImage!,
                 onUseThisImage: () {
-                  Navigator.pop(context); // Close the dialog
+                   // Close the dialog
                 },
               ),
-            );
+            ).then((value) => {
+              setState(() {
+                _modifiedImage = value;
+              })
+            });
           } else {
             print("Error decoding the image.");
           }
@@ -98,20 +79,19 @@ class _SecondScreenState extends State<SecondScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
-          // Status bar color
+
           statusBarColor: Colors.green,
 
-          // Status bar brightness (optional)
-          statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
-          statusBarBrightness: Brightness.light, // For iOS (dark icons)
         ),
-        title: const Text('Add Image / Icon'),
+        title: const Center(child: Text('Add Image / Icon'),),
         backgroundColor: Colors.white,
         leading: const BackButton(
           color: Colors.black,
         ),
+        elevation: 20,
       ),
       body: ListView(
         children: [
